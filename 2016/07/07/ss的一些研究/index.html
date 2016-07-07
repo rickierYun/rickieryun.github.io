@@ -10,6 +10,8 @@
 
     <!--Description-->
     
+        <meta name="description" content="最近失业，好好的把ss这个加密方式研究了一波。然后打开了新世界的大门（我以前到底是做什么的！）。身为一个iOS开发人员，成天忙着搞UI和动画，对底层接触的好少。首先我先参考了Github上ss项目。然后拿来进行研究。并用swift暴露接口，这里我并不想去仔细说这个加密算法，里面用到的东西，详细的信息">
+    
 
     <!--Author-->
     
@@ -18,7 +20,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="RickYun&#39;s Blog"/>
+        <meta property="og:title" content="ss的一些研究"/>
     
 
     <!--Open Graph Description-->
@@ -29,7 +31,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
     
 
     <!--Page Cover-->
@@ -40,7 +42,7 @@
 
     <!-- Title -->
     
-    <title>Archives: 2016 - RickYun&#39;s Blog</title>
+    <title>ss的一些研究 - RickYun&#39;s Blog</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -123,76 +125,61 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-<!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
 <header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>2016</h1>
+                <div class="post-heading">
+                    <h1>ss的一些研究</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        2016-07-07
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+
+            <!-- Gallery -->
             
-                <div class="post-preview">
-    <a href="/2016/07/07/ss的一些研究/">
-        <h1 class="post-title archive">
-            ss的一些研究
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2016-07-07
-    </p>
-</div>
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>最近失业，好好的把ss这个加密方式研究了一波。然后打开了新世界的大门（我以前到底是做什么的！）。身为一个iOS开发人员，成天忙着搞UI和动画，对底层接触的好少。首先我先参考了Github上ss项目。然后拿来进行研究。并用swift暴露接口，这里我并不想去仔细说这个加密算法，里面用到的东西，详细的信息可以参看源码，我只描述一下我在编译这个遇到的坑的地方。   </p>
+<p>整体加密算法是：对数据包进行行EVP＋openssl／MD5＋加随机数的方式进行加密。最后利用归并算法合成一个数据包，通过socket5的发送数据。看起来好像很简单的样子😏。但我把原文件拿来编译时到处出错。   </p>
+<p>首先是缺少库包的问题：<br><img src="/img/screenShot.png" alt="image"><br>这是我的Podfile文件。libev和OpenSSL这两个库包都容易找到。但libsodium这个包库，不知道是作者自己删除还是怎么的，一直没有下下来。cocopods 上的版本是1.0.3但是pod的结果是无法获取的。我当时找了很久，没有办法。只能将原来项目中的库包复制一份再pod。<br>其次就是libsodium中的sodium.h。需要将里面的所有文件目录修改一下。然后就是libev库包，因为这个是Linux的底层操作库（暂时是这样描述的吧），里面文件在编译的时候会有个错误。EV_TIMEOUT和EV_ERROR 这两个变量会报重定义错误，个人的做法是在定义的时候将EV_TIMEOUT注释，因为后面有个将其宏定义了，而且赋值操作是一样的，所以不会有很大的影响。EV_ERROR这个我直接将它换成了EV_ERRORX这样让编译通过了。  </p>
+<p>上层加密算法出的错误。不知道Xcode编译器的问题还是其他原因，如果将原来的文件＋pod的第三方库直接编译的话还是会出错的。linker command failed with exit code 1 的错误。这里顺带提一下这个错误。这个错误出现的几个原因可能是：<br>1: 文件中有重复定义的文件名<br>2: search path第三方库时出错<br>3: 还有就是定义在头文件，然后头文件被重复引用的错误<br>这个就属于第三个原因，把所有的常量定义在.m或.c 文件中即可。  </p>
+<p>接下来就是将所有的设置暴露给别人了，然后在进行调用就好。下面是我项目的地址：<a href="https://github.com/freedomio/Shadowsocket-swift。" target="_blank" rel="external">https://github.com/freedomio/Shadowsocket-swift。</a><br>参考文档：<a href="http://m.blog.chinaunix.net/uid-15014334-id-4851639.html" target="_blank" rel="external">http://m.blog.chinaunix.net/uid-15014334-id-4851639.html</a><br>          <a href="http://c.biancheng.net/cpp/html/233.html" target="_blank" rel="external">http://c.biancheng.net/cpp/html/233.html</a><br>          <a href="http://blog.csdn.net/gdwzh/article/details/19231" target="_blank" rel="external">http://blog.csdn.net/gdwzh/article/details/19231</a></p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
             
-                <div class="post-preview">
-    <a href="/2016/07/07/word/">
-        <h1 class="post-title archive">
-            word
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2016-07-07
-    </p>
-</div>
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
             
-                <div class="post-preview">
-    <a href="/2016/07/07/hello-world/">
-        <h1 class="post-title archive">
-            Hello World
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2016-07-07
-    </p>
-</div>
-            
-            <div class="archive-before-pagination"></div>
-            <ul class="pager">
-    
-    
-</ul>
         </div>
     </div>
-</div>
-
-
+</article>
 
     <!-- Footer -->
     <hr />
